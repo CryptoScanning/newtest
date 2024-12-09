@@ -1,6 +1,29 @@
 import time
 import requests
+import threading
+from flask import Flask
 
+# Flask setup for keep-alive
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Server is running!"
+
+def start_server():
+    app.run(host="0.0.0.0", port=5000)
+
+def keep_alive():
+    while True:
+        try:
+            # Send a ping request to the server's local URL
+            ping_response = requests.get("https://replit.com/@ltcbot/newtest)
+            print(f"Keep-alive ping response: {ping_response.status_code}")
+        except Exception as e:
+            print(f"Keep-alive ping failed: {e}")
+        time.sleep(600)  # Ping every 10 minutes
+
+# Litecoin price monitoring
 def fetch_litecoin_price():
     try:
         # Using the specified CoinGecko API URL for Litecoin price
@@ -15,7 +38,7 @@ def fetch_litecoin_price():
         print(f"An error occurred while fetching Litecoin price: {e}")
         return None
 
-def main():
+def monitor_litecoin():
     print("Monitoring Litecoin price. Press Ctrl+C to stop.")
     old_price = None  # Initialize old price as None
     
@@ -32,4 +55,17 @@ def main():
         
         time.sleep(10)  # Wait for 10 seconds before the next request
 
-main()
+# Run both the Flask server and Litecoin monitoring
+if __name__ == "__main__":
+    # Start Flask server in a separate thread
+    server_thread = threading.Thread(target=start_server)
+    server_thread.daemon = True
+    server_thread.start()
+
+    # Start the keep-alive ping mechanism in another thread
+    keep_alive_thread = threading.Thread(target=keep_alive)
+    keep_alive_thread.daemon = True
+    keep_alive_thread.start()
+
+    # Start monitoring Litecoin price
+    monitor_litecoin()
