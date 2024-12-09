@@ -17,7 +17,7 @@ def keep_alive():
     while True:
         try:
             # Send a ping request to the server's local URL
-            ping_response = requests.get("https://replit.com/@ltcbot/newtest)
+            ping_response = requests.get("https://replit.com/@ltcbot/newtest")
             print(f"Keep-alive ping response: {ping_response.status_code}")
         except Exception as e:
             print(f"Keep-alive ping failed: {e}")
